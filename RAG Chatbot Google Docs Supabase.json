@@ -1,0 +1,159 @@
+{
+  "name": "RAG Chatbot Google Docs Supabase",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "64c164a4-f973-45b5-830e-f1edc47a6809",
+      "name": "When chat message received",
+      "webhookId": "048f3966-10e5-4860-9465-17f5ae9fbd03"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Kamu adalah AI Assistant yang membantu menjawab pertanyaan tentang Panduan Penulisan Ilmiah Tugas Akhir Skripsi.\n\nJawablah pertanyaan berdasarkan informasi yang tersedia dari Supabase Vector Store.\n\nJika informasi tidak ditemukan dalam dokumen, katakan bahwa informasi tersebut tidak tersedia dalam dokumen."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        256,
+        0
+      ],
+      "id": "48afa9aa-881a-4605-9695-73c8dd80b1a8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.6-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        240
+      ],
+      "id": "fd87efed-8772-466a-91fd-b1fe47ff52b2",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "D8KvYsdhAGJRUrzX",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Mengambil informasi dari dokumen Panduan Penulisan Ilmiah Tugas Akhir melalui Supabase Vector Store untuk membantu menjawab pertanyaan pengguna.",
+        "tableName": {
+          "__rl": true,
+          "value": "gdocs_documents",
+          "mode": "list",
+          "cachedResultName": "gdocs_documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        240
+      ],
+      "id": "b89d3813-97fc-4431-b4c8-7716d6fa243f",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "p6a9QBN1LhrpO7nu",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        368,
+        464
+      ],
+      "id": "368d808f-3359-4b86-a951-8f24ed5a12c2",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "D8KvYsdhAGJRUrzX",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8b141ac6-b2a1-4b93-8805-444d483f07fd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "9KEdpbgXZLP6GBFQ",
+  "tags": []
+}
